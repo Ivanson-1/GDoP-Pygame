@@ -23,10 +23,10 @@ def load_image(name, colorkey=None):
     return image
 
 
-def play_sound(filename, volume=0.5):
-    mixer.music.load(filename)
-    mixer.music.set_volume(volume)
-    mixer.music.play()
+def play_sound(filename, volume=0.5, channel=0):
+    sound = mixer.Sound(filename)
+    sound.set_volume(volume)
+    mixer.Channel(channel).play(sound)
 
 
 def gameplay():
@@ -137,6 +137,8 @@ def start_screen():
                 if check_click(pygame.mouse.get_pos()):
                     current_level = check_click(pygame.mouse.get_pos())
                     generate_level(load_level(current_level))
+                    background.update(current_level)
+                    play_sound(f'data/sound/{current_level[:-4]}.mp3')
                     return True
 
         level_1.update(pygame.mouse.get_pos())
@@ -174,10 +176,13 @@ class LevelButton(pygame.sprite.Sprite):
 
 
 class Background(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, level):
         super().__init__(all_sprites)
-        self.image = load_image("pict/background.png")  # pygame.Surface(size)
+        self.image = load_image(f"pict/background{level[5]}.png")  # pygame.Surface(size)
         self.rect = self.image.get_rect()
+
+    def update(self, level):
+        self.image = load_image(f"pict/background{level[5]}.png")
 
 
 class Block(pygame.sprite.Sprite):
@@ -293,9 +298,9 @@ class Player(pygame.sprite.Sprite):
                 money += 1
                 bank.update()
                 if money == all_coin:
-                    play_sound('data/sound/check_all_coins.mp3')
+                    play_sound('data/sound/check_all_coins.mp3', channel=1, volume=0.8)
                 else:
-                    play_sound('data/sound/coin.mp3')
+                    play_sound('data/sound/coin.mp3', channel=1, volume=0.7)
 
         if any([self.rect.colliderect(i.rect) for i in fin_flag_sprite]) and money == all_coin:
             self.is_won = True
@@ -500,7 +505,7 @@ while True:
     button_sprite = pygame.sprite.Group()
 
     camera = Camera()
-    background = Background()
+    background = Background(current_level)
     player = Player(100, 100)
 
     cnt = 0
