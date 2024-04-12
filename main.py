@@ -132,6 +132,7 @@ def start_screen():
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 generate_level(load_level(current_level))
+                play_sound(f'data/sound/{current_level[:-4]}.mp3')
                 return True
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if check_click(pygame.mouse.get_pos()):
@@ -354,7 +355,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Particle(pygame.sprite.Sprite):
-    fire = [load_image('pict/particle.png')]
+    fire = [load_image('pict\particle.png')]
     for scale in (1, 3, 5):
         fire.append(pygame.transform.scale(fire[0], (scale, scale)))
 
