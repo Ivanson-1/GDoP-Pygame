@@ -7,15 +7,22 @@ import sys
 from pygame.math import Vector2
 from pygame import mixer
 
+
 size = WIDTH, HEIGHT = 900, 600
 tile_width = tile_height = 50
 GRAVITY = Vector2(0, 0.5)
 
-current_level = 'level1.txt'
+current_level = "level1.txt"
+
+
+def window_title(title):
+    pygame.display.set_caption(title)
+    Icon = load_image("pict/player.png")
+    pygame.display.set_icon(Icon)
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
+    fullname = os.path.join("data", name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -30,6 +37,8 @@ def play_sound(filename, volume=0.5, channel=0):
 
 
 def gameplay():
+    window_title("PLAY")
+
     global cnt, death_player, win, death, running
     while True:
         if not win and not death:
@@ -37,8 +46,12 @@ def gameplay():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP or\
-                        event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                elif (
+                    event.type == pygame.KEYDOWN
+                    and event.key == pygame.K_UP
+                    or event.type == pygame.MOUSEBUTTONDOWN
+                    and event.button == 1
+                ):
                     player.jump()
                 elif event.type == MYEVENTTYPE:
                     if not win and not death:
@@ -59,7 +72,9 @@ def gameplay():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                elif (
+                    event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN
+                ):
                     return
                 elif event.type == MYEVENTTYPE:
                     if death_player is None:
@@ -88,24 +103,28 @@ def gameplay():
 
 
 def start_screen():
+    window_title("MENU")
+
     global screen, running, current_level
     intro_text = [
         "СОБЕРИТЕ ВСЕ МОНЕТЫ И КОСНИТЕСЬ ФЛАШКА ФИНИША",
-        '',
-        'нажмите чтобы начать игру'
+        "",
+        "нажмите чтобы начать игру",
     ]
 
     logo = load_image("pict/logo.png")
-    fon = pygame.transform.scale(load_image('pict/menu.jpg'), (WIDTH, HEIGHT))
+    fon = pygame.transform.scale(load_image("pict/menu.jpg"), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
     screen.blit(logo, (350, 50))
 
-    font = pygame.font.Font('data/font/impact regular.ttf', 28)
-    font_2 = pygame.font.Font('data/font/impact regular.ttf', 18)
+    font = pygame.font.Font("data/font/impact regular.ttf", 28)
+    font_2 = pygame.font.Font("data/font/impact regular.ttf", 18)
     text_coord = 200
     for line in range(len(intro_text)):
         if line <= 1:
-            string_rendered = font.render(intro_text[line], 1, pygame.Color(200, 50, 200))
+            string_rendered = font.render(
+                intro_text[line], 1, pygame.Color(200, 50, 200)
+            )
             intro_rect = string_rendered.get_rect()
             text_coord += 10
             intro_rect.top = text_coord
@@ -113,7 +132,9 @@ def start_screen():
             text_coord += intro_rect.height
             screen.blit(string_rendered, intro_rect)
         else:
-            string_rendered = font_2.render(intro_text[line], 1, pygame.Color(180, 100, 250))
+            string_rendered = font_2.render(
+                intro_text[line], 1, pygame.Color(180, 100, 250)
+            )
             intro_rect = string_rendered.get_rect()
             text_coord += 10
             intro_rect.top = text_coord
@@ -132,14 +153,14 @@ def start_screen():
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 generate_level(load_level(current_level))
-                play_sound(f'data/sound/{current_level[:-4]}.mp3')
+                play_sound(f"data/sound/{current_level[:-4]}.mp3")
                 return True
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if check_click(pygame.mouse.get_pos()):
                     current_level = check_click(pygame.mouse.get_pos())
                     generate_level(load_level(current_level))
                     background.update(current_level)
-                    play_sound(f'data/sound/{current_level[:-4]}.mp3')
+                    play_sound(f"data/sound/{current_level[:-4]}.mp3")
                     return True
 
         level_1.update(pygame.mouse.get_pos())
@@ -153,16 +174,16 @@ def start_screen():
 def check_click(pos):
     for i in button_sprite:
         if i.rect.x < pos[0] < i.rect.x + 180 and i.rect.y < pos[1] < i.rect.y + 120:
-            return f'{i.current_level}.txt'
+            return f"{i.current_level}.txt"
     return False
 
 
 class LevelButton(pygame.sprite.Sprite):
     def __init__(self, level):
         super().__init__(button_sprite, all_sprites)
-        self.current_level = f'level{level}'
-        self.image_a = load_image(f'pict/level_{level}.png')
-        self.image_b = load_image(f'pict/level_{level}_tup.png')
+        self.current_level = f"level{level}"
+        self.image_a = load_image(f"pict/level_{level}.png")
+        self.image_b = load_image(f"pict/level_{level}_tup.png")
         self.image = self.image_a
         self.rect = self.image.get_rect()
 
@@ -170,7 +191,10 @@ class LevelButton(pygame.sprite.Sprite):
         self.rect.y = 400
 
     def update(self, pos):
-        if self.rect.x < pos[0] < self.rect.x + 180 and self.rect.y < pos[1] < self.rect.y + 120:
+        if (
+            self.rect.x < pos[0] < self.rect.x + 180
+            and self.rect.y < pos[1] < self.rect.y + 120
+        ):
             self.image = self.image_b
         else:
             self.image = self.image_a
@@ -179,7 +203,9 @@ class LevelButton(pygame.sprite.Sprite):
 class Background(pygame.sprite.Sprite):
     def __init__(self, level):
         super().__init__(all_sprites)
-        self.image = load_image(f"pict/background{level[5]}.png")  # pygame.Surface(size)
+        self.image = load_image(
+            f"pict/background{level[5]}.png"
+        )  # pygame.Surface(size)
         self.rect = self.image.get_rect()
 
     def update(self, level):
@@ -203,8 +229,15 @@ class Peak(pygame.sprite.Sprite):
 class FinishFlag(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(fin_flag_sprite, all_sprites)
-        self.frames = [load_image("pict/fin_flag_1.png"), load_image("pict/fin_flag_2.png")]
-        self.rect = self.frames[0].get_rect().move(tile_width * (pos_x - 1), tile_height * (pos_y - 1))
+        self.frames = [
+            load_image("pict/fin_flag_1.png"),
+            load_image("pict/fin_flag_2.png"),
+        ]
+        self.rect = (
+            self.frames[0]
+            .get_rect()
+            .move(tile_width * (pos_x - 1), tile_height * (pos_y - 1))
+        )
         self.image = load_image("pict/fin_flag_2.png")
         self.cur_frames = 0
 
@@ -217,14 +250,16 @@ class Bank(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__(bank_sprite, all_sprites)
         pygame.font.init()
-        self.font = pygame.font.SysFont('EBENYA', 100)
+        self.font = pygame.font.Font("data/font/EBENYA.ttf", 100)
         self.image = self.font.render(str(money), False, (255, 255, 255))
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = 50, 10
         self.all_coin = all_coin
 
     def update(self):
-        self.image = self.font.render(f'{money}/{self.all_coin}', False, (255, 255, 255))
+        self.image = self.font.render(
+            f"{money}/{self.all_coin}", False, (255, 255, 255)
+        )
 
 
 class AnimatedSprite(pygame.sprite.Sprite):
@@ -237,13 +272,15 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.rect = self.rect.move(x, y)
 
     def cut_sheet(self, sheet, columns, rows):
-        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
-                                sheet.get_height() // rows)
+        self.rect = pygame.Rect(
+            0, 0, sheet.get_width() // columns, sheet.get_height() // rows
+        )
         for j in range(rows):
             for i in range(columns):
                 frame_location = (self.rect.w * i, self.rect.h * j)
-                self.frames.append(sheet.subsurface(pygame.Rect(
-                    frame_location, self.rect.size)))
+                self.frames.append(
+                    sheet.subsurface(pygame.Rect(frame_location, self.rect.size))
+                )
 
     def update(self):
         self.cur_frame = (self.cur_frame + 1) % len(self.frames)
@@ -278,8 +315,9 @@ class Player(pygame.sprite.Sprite):
             self.vel = Vector2(6, 0)
 
             self.check_collide_in_jump()
-            if self.check_collide_top_border() and\
-                    not pygame.sprite.spritecollide(self, peak_sprites, False):
+            if self.check_collide_top_border() and not pygame.sprite.spritecollide(
+                self, peak_sprites, False
+            ):
                 if not self.correct_position:
                     self.check_position()
             else:
@@ -299,11 +337,14 @@ class Player(pygame.sprite.Sprite):
                 money += 1
                 bank.update()
                 if money == all_coin:
-                    play_sound('data/sound/check_all_coins.mp3', channel=1, volume=0.8)
+                    play_sound("data/sound/check_all_coins.mp3", channel=1, volume=0.8)
                 else:
-                    play_sound('data/sound/coin.mp3', channel=1, volume=0.7)
+                    play_sound("data/sound/coin.mp3", channel=1, volume=0.7)
 
-        if any([self.rect.colliderect(i.rect) for i in fin_flag_sprite]) and money == all_coin:
+        if (
+            any([self.rect.colliderect(i.rect) for i in fin_flag_sprite])
+            and money == all_coin
+        ):
             self.is_won = True
             self.is_died = False
         elif not self.rect.colliderect(screen_rect):
@@ -326,19 +367,29 @@ class Player(pygame.sprite.Sprite):
             self.correct_position = True
 
     def check_collide_top_border(self):
-        return any([
-            self.rect.collidepoint(i.rect.topleft) or\
-            self.rect.collidepoint(i.rect.midtop) or\
-            self.rect.collidepoint(i.rect.topright) for i in block_sprites
-        ]) and not any([
-            self.rect.collidepoint(i.rect.midleft) and\
-            self.rect.collidepoint(i.rect.bottomleft) for i in block_sprites
-        ])
+        return any(
+            [
+                self.rect.collidepoint(i.rect.topleft)
+                or self.rect.collidepoint(i.rect.midtop)
+                or self.rect.collidepoint(i.rect.topright)
+                for i in block_sprites
+            ]
+        ) and not any(
+            [
+                self.rect.collidepoint(i.rect.midleft)
+                and self.rect.collidepoint(i.rect.bottomleft)
+                for i in block_sprites
+            ]
+        )
 
     def check_collide_in_jump(self):
-        return all([
-            self.rect.bottom <= i.rect.top for i in block_sprites if self.rect.colliderect(i.rect)
-        ])
+        return all(
+            [
+                self.rect.bottom <= i.rect.top
+                for i in block_sprites
+                if self.rect.colliderect(i.rect)
+            ]
+        )
 
     def check_life(self):
         if self.is_died:
@@ -355,7 +406,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Particle(pygame.sprite.Sprite):
-    fire = [load_image('pict\particle.png')]
+    fire = [load_image("pict/particle.png")]
     for scale in (1, 3, 5):
         fire.append(pygame.transform.scale(fire[0], (scale, scale)))
 
@@ -375,11 +426,14 @@ class Particle(pygame.sprite.Sprite):
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 
-        dist = pygame.math.Vector2(self.rect.x + 5, self.rect.y + 5).distance_to((player.rect.x, player.rect.y))
-        if any([
-            self.rect.colliderect(i.rect) for i in block_sprites]) or\
-                not self.rect.colliderect(screen_rect) or\
-                dist > 100:
+        dist = pygame.math.Vector2(self.rect.x + 5, self.rect.y + 5).distance_to(
+            (player.rect.x, player.rect.y)
+        )
+        if (
+            any([self.rect.colliderect(i.rect) for i in block_sprites])
+            or not self.rect.colliderect(screen_rect)
+            or dist > 100
+        ):
             self.kill()
 
 
@@ -387,11 +441,15 @@ class DeathWin(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         if win:
-            self.image = load_image('pict/win_screen.jpg')
-            self.text_image = pygame.transform.scale(load_image('pict/winner.png'), (300, 200))
+            self.image = load_image("pict/win_screen.jpg")
+            self.text_image = pygame.transform.scale(
+                load_image("pict/winner.png"), (300, 200)
+            )
         else:
-            self.image = load_image('pict/die_screen.jpg')
-            self.text_image = pygame.transform.scale(load_image('pict/lose.png'), (300, 200))
+            self.image = load_image("pict/die_screen.jpg")
+            self.text_image = pygame.transform.scale(
+                load_image("pict/lose.png"), (300, 200)
+            )
 
         self.rect = self.image.get_rect()
         self.text_rect = self.text_image.get_rect()
@@ -422,13 +480,13 @@ def create_particles(position):
 def player_win():
     global win
     win = True
-    play_sound('data/sound/tadaam.mp3')
+    play_sound("data/sound/tadaam.mp3")
 
 
 def player_die():
     global death
     death = True
-    play_sound('data/sound/death.mp3')
+    play_sound("data/sound/death.mp3")
 
 
 class Camera:
@@ -448,16 +506,16 @@ def generate_level(level):
     x, y = None, None
     for y in range(len(level)):
         for x in range(len(level[y])):
-            if level[y][x] == '.':
+            if level[y][x] == ".":
                 pass
-            elif level[y][x] == '_':
+            elif level[y][x] == "_":
                 Block(x, y)
-            elif level[y][x] == '^':
+            elif level[y][x] == "^":
                 Peak(x, y)
-            elif level[y][x] == '$':
-                AnimatedSprite(load_image('pict/coin_6x2.png'), 6, 2, x * 50, y * 50)
+            elif level[y][x] == "$":
+                AnimatedSprite(load_image("pict/coin_6x2.png"), 6, 2, x * 50, y * 50)
                 all_coin += 1
-            elif level[y][x] == '>':
+            elif level[y][x] == ">":
                 FinishFlag(x, y)
     return x, y
 
@@ -465,14 +523,14 @@ def generate_level(level):
 def load_level(filename):
     global width_level
 
-    filename = 'data/levels/' + filename
-    with open(filename, 'r') as mapFile:
+    filename = "data/levels/" + filename
+    with open(filename, "r") as mapFile:
         level_map = [line.strip() for line in mapFile]
 
     max_width = max(map(len, level_map))
     width_level = max_width
 
-    return list(map(lambda x: x.ljust(max_width, '.'), level_map))
+    return list(map(lambda x: x.ljust(max_width, "."), level_map))
 
 
 while True:
