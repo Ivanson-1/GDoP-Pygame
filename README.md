@@ -26,8 +26,8 @@
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/your-username/your-repository-name.git
-   cd your-repository-name
+   git clone 'https://github.com/Ivanson-1/GDoP-Pygame.git'
+   cd GDoP-Pygame
    ```
 2. Установите зависимости:
    ```bash
@@ -43,7 +43,7 @@
 ## Структура проекта
 
 ```
-project-folder/
+GDoP-Pygame/
 ├── main.py              # Основная логика игры
 ├── data/
 │   ├── pict/            # Изображения и спрайты
