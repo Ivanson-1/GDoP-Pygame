@@ -56,7 +56,7 @@ project-folder/
 
 ## Демонстрация
 
-[Посмотрите видео о геймплее на YouTube](https://youtube.com/your-video-link)
+[Посмотрите видео о геймплее на YouTube]([https://youtube.com/](https://youtu.be/b9Ns-1NcNXI?si=YrWe1r0gA5zD_52n))
 
 ## Лицензия
 
